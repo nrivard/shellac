@@ -1,5 +1,6 @@
 #include "shellac.h"
 #include <stdbool.h>
+#include "serial.h"
 #include "string.h"
 
 #define PARAM_SIZE 10
@@ -31,7 +32,18 @@ static Command commands[] = {
 };
 
 char *command_read_input(char *buffer, int size) {
-    return NULL;
+    int recvd = 0;
+    char *ptr = buffer;
+    while (recvd < size - 1) {
+        *ptr = serial_get();
+        if (*ptr == '\n') {
+            break;
+        }
+        ptr++;
+        recvd++;
+    }
+    *ptr = '\0';
+    return buffer;
 }
 
 void command_tokenize(char *buffer, Input *input) {
@@ -65,36 +77,36 @@ void command_tokenize(char *buffer, Input *input) {
 }
 
 bool command_read(char *args[], int count) {
-    if (count < 1) {
-        return false;
-    }
+    // if (count < 1) {
+    //     return false;
+    // }
 
-    char *addr = (char *)strtoul(args[0], NULL, 16);
-    int len = count > 1 ? strtoul(args[1], NULL, 16) : 1;
+    // char *addr = (char *)strtoul(args[0], NULL, 16);
+    // int len = count > 1 ? strtoul(args[1], NULL, 16) : 1;
 
-    // printf("Reading %d bytes from %p", len, addr);
-    for (int i = 0; i < len; i++) {
-        if ((i % 8) == 0) {
-            // printf("\n%p:  ", &addr[i]);
-        }
+    // // printf("Reading %d bytes from %p", len, addr);
+    // for (int i = 0; i < len; i++) {
+    //     if ((i % 8) == 0) {
+    //         // printf("\n%p:  ", &addr[i]);
+    //     }
 
-        // printf("%02X ", (unsigned int)(addr[i] & 0xFF));
-    }
+    //     // printf("%02X ", (unsigned int)(addr[i] & 0xFF));
+    // }
 
     return true;
 }
 
 bool command_write(char *args[], int count) {
-    if (count < 2 || count > 9) {
-        return false;
-    }
+    // if (count < 2 || count > 9) {
+    //     return false;
+    // }
 
-    char *addr = (char *)strtoul(args++[0], NULL, 16);
+    // char *addr = (char *)strtoul(args++[0], NULL, 16);
 
-    // printf("Writing %d bytes to %p", count - 1, addr);
-    for (int i = 0; i < count - 1; i++) {
-        *addr++ = 0xFF & strtoul(args[i], NULL, 16);
-    }
+    // // printf("Writing %d bytes to %p", count - 1, addr);
+    // for (int i = 0; i < count - 1; i++) {
+    //     *addr++ = 0xFF & strtoul(args[i], NULL, 16);
+    // }
 
     return true;
 }
@@ -109,37 +121,33 @@ bool command_execute(char *args[], int count) {
     return false;
 }
 
-void shellac_send_string(ShellacConfig *config, char *str) {
-    while (*str) {
-        config->putc(*str++);
-    }
-}
-
-void shellac_main(ShellacConfig *config) {
+void shellac_main() {
     char buffer[0x80];
     Input input;
     Command command;
 
     for(;;) {
-        config->putc('>');
+        serial_put('>');
         if (!command_read_input(buffer, sizeof(buffer))) {
-            shellac_send_string(config, "FATAL: couldn't read user input!\n");
+            serial_put_string("FATAL: couldn't read user input!\n");
             return;
         }
 
         command_tokenize(buffer, &input);
 
         if (!command_parse(&input, &command)) {
-            // printf("Invalid command: \"%s\"\n", input.params[0]);
+            serial_put_string("Invalid command: \"");
+            serial_put_string(input.params[0]);
+            serial_put_string("\"\n");
             continue;
         }
 
         if (!command.function(&input.params[1], input.numParams - 1)) {
-            shellac_send_string(config, "Invalid command!\n");
-            shellac_send_string(config, "usage: ");
-            shellac_send_string(config, command.usage);
+            serial_put_string("Invalid command!\n");
+            serial_put_string("usage: ");
+            serial_put_string(command.usage);
         }
 
-        shellac_send_string(config, "\n");
+        serial_put_string("\n");
     }
 }

@@ -1,4 +1,5 @@
 #include "shellac.h"
+#include "serial.h"
 #include <stdio.h>
 
 static char SampleData[0x80] = {
@@ -8,21 +9,16 @@ static char SampleData[0x80] = {
     1, 2, 3, 4, 5, 6, 7, 8,
 };
 
-char stub_getc() {
+char serial_get() {
     return getchar();
 }
 
-void stub_putc(char byte) {
+void serial_put(char byte) {
     putchar(byte);
 }
 
 int main() {
-    ShellacConfig config = {
-        stub_getc,
-        stub_putc
-    };
-
     printf("Sample data located at: %p\n", &SampleData);
 
-    shellac_main(&config);
+    shellac_main();
 }
