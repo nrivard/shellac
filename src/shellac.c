@@ -135,18 +135,24 @@ void shellac_main() {
 
         command_tokenize(buffer, &input);
 
-        if (!command_parse(&input, &command)) {
-            serial_put_string("Invalid command: \"");
-            serial_put_string(input.params[0]);
-            serial_put_string("\"\n");
-            continue;
+        serial_put(input.numParams + '0');
+        for (int i = 0; i < input.numParams; i++) {
+            serial_put_string(input.params[i]);
+            serial_put('\n');
         }
 
-        if (!command.function(&input.params[1], input.numParams - 1)) {
-            serial_put_string("Invalid command!\n");
-            serial_put_string("usage: ");
-            serial_put_string(command.usage);
-        }
+        // if (!command_parse(&input, &command)) {
+        //     serial_put_string("Invalid command: \"");
+        //     serial_put_string(input.params[0]);
+        //     serial_put_string("\"\n");
+        //     continue;
+        // }
+
+        // if (!command.function(&input.params[1], input.numParams - 1)) {
+        //     serial_put_string("Invalid command!\n");
+        //     serial_put_string("usage: ");
+        //     serial_put_string(command.usage);
+        // }
 
         serial_put_string("\n");
     }
