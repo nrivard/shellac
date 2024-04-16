@@ -1,6 +1,7 @@
 #include "shellac.h"
 #include "serial.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 static char SampleData[0x80] = {
     1, 2, 3, 4, 5, 6, 7, 8,
