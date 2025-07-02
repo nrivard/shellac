@@ -6,8 +6,9 @@ static char hex[] = {
 };
 
 void serial_put_string(const char *str) {
-    while (*str) {
-        serial_put(*str++);
+    register char c;
+    while ((c = *str++)) {
+        serial_put(c);
     }
 }
 
@@ -19,7 +20,7 @@ void serial_put_long(const unsigned long d) {
     }
 }
 
-void serial_put_char(const char c) {
+void serial_put_hex(const char c) {
     serial_put(hex[c >> 4]);
     serial_put(hex[c & 0xF]);
 }

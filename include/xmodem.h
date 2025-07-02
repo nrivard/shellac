@@ -1,4 +1,3 @@
-#ifndef XMODEM_H
-#define XMODEM_H
+#pragma once
 
-#endif
+int xmodem_recv(const char *destination, int maxsize);

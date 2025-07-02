@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "_types.h": "c",
+        "__config": "c",
+        "stdbool.h": "c",
+        "string.h": "c",
+        "stdio.h": "c",
+        "cstddef": "c",
+        "serial.h": "c",
+        "shellac.h": "c",
+        "stdlib.h": "c",
+        "ctype.h": "c",
+        "spi.h": "c"
+    }
+}

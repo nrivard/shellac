@@ -4,7 +4,7 @@ void spi_init() {
     // mark CLK, MOSI, and CS as outputs
     *SPIDataDir |= (SPI_CLK | SPI_CS | SPI_MOSI);
     // mark MISO as input
-    *SPIDataDir &= (SPI_MISO);
+    *SPIDataDir &= ~(SPI_MISO);
 
     // set up initial resting SPI state by setting pins high
     *SPIPort |= (SPI_CLK | SPI_CS | SPI_MOSI);

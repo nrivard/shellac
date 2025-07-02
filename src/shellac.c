@@ -92,7 +92,7 @@ bool command_read(char *args[], int count) {
             serial_put_string(":  ");
         }
 
-        serial_put_char(addr[i] & 0xFF);
+        serial_put_hex(addr[i] & 0xFF);
         serial_put(' ');
     }
 
